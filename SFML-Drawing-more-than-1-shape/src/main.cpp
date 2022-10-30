@@ -1,12 +1,15 @@
 #include <SFML\Window.hpp>
 #include <SFML\Graphics.hpp>
 #include <iostream>
+#include <vector>
 
 //Global variables:
 int x=100;
 int y=100;
-sf::CircleShape daire(30.0f,180);
+sf::CircleShape *aktifSekil=nullptr;
 bool cizimBasladimi = false;
+
+std::vector<sf::CircleShape*> sekiller;
 
 void KeyboardControl(sf::Event &event)
 {
@@ -38,8 +41,18 @@ void MouseControl(sf::Event &event)
           {
             x=event.mouseButton.x;
             y=event.mouseButton.y;
+            aktifSekil=new sf::CircleShape(1,90);
+                //setting the color of the circle
+                aktifSekil->setFillColor(sf::Color(55,100,0));
 
-            daire.setRadius(1);
+                //setting the thickness of outline of the circle
+                aktifSekil->setOutlineThickness(5.0);
+
+                //outline color of the circle
+                aktifSekil->setOutlineColor(sf::Color(255,0,0));
+
+                //circle position relative to the left top
+                aktifSekil->setPosition(100,100);
             cizimBasladimi=true;
           }
         }
@@ -48,6 +61,7 @@ void MouseControl(sf::Event &event)
         {
           if(event.mouseButton.button==sf::Mouse::Left)
           {
+            sekiller.push_back(aktifSekil);
             cizimBasladimi=false;
           }
         }
@@ -64,7 +78,7 @@ void MouseControl(sf::Event &event)
 
           if(cizimBasladimi)
           {
-            daire.setRadius(yariCap);
+            aktifSekil->setRadius(yariCap);
           }
         }
 }
@@ -79,23 +93,6 @@ int main(void)
 
     window.setFramerateLimit(60);
 
-
-
-    //setting the color of the circle
-    daire.setFillColor(sf::Color(55,100,0));
-
-    //setting the thickness of outline of the circle
-    daire.setOutlineThickness(5.0);
-
-    //outline color of the circle
-    daire.setOutlineColor(sf::Color(255,0,0));
-
-    //circle position relative to the left top
-    daire.setPosition(100,100);
-
-
-
-    auto position = daire.getPosition();
 
     while(window.isOpen())
     {
@@ -113,13 +110,39 @@ int main(void)
 
       }
 
-      daire.setPosition(x,y);
+      
+      window.clear(sf::Color::Blue);
+
+      /*
+      Old type for loop
+      int elemanSayisi=sekiller.size();
+
+      for(int i=0;i<elemanSayisi;i++)
+      {
+        window.draw(*sekiller[i]);
+      }
+
+      */
+
+      for(auto siradaki:sekiller)
+      {
+        window.draw(*siradaki);
+      }
+
+
+
+      if(aktifSekil)
+      {
+        aktifSekil->setPosition(x,y);
+        window.draw(*aktifSekil);
+      }
+
 
 
       //clearing the page and then giving it a random blue color.
-      window.clear(sf::Color::Blue);
+
       //after clearing the page I am now drawing my shape
-      window.draw(daire);
+  
       //and after drawing I am displaying it.
       window.display();
       
